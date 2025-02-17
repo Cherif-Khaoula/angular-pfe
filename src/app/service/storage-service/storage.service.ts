@@ -1,4 +1,3 @@
-import { Token } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 
 const USER = "c_user";
@@ -14,13 +13,15 @@ export class StorageService {
     window.localStorage.setItem(TOKEN, token);
   }
 
-static getToken(): string {
-    return window.localStorage.getItem(TOKEN);
+  static getToken(): string | null {
+    return window.localStorage.getItem(TOKEN) ?? null;
 }
 
 static getUser(): any {
-    return JSON.parse(localStorage.getItem(USER));
+    const user = localStorage.getItem(USER);
+    return user ? JSON.parse(user) : null;
 }
+
 
 static getUserRole(): string {
     const user = this.getUser();

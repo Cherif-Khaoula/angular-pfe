@@ -1,13 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { JwtService } from 'src/app/service/jwt.service';
-import { StorageService } from 'src/app/service/storage-service/storage.service';
+import { JwtService } from '../../service/jwt.service';
+import { StorageService } from '../../service/storage-service/storage.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  styleUrls: ['./login.component.scss'], 
+   imports: [
+    CommonModule,
+      ReactiveFormsModule 
+    ]
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;

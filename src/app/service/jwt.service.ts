@@ -25,7 +25,7 @@ export class JwtService {
         this.storage.saveUser(userData); // ✅ Stocker l'utilisateur avec son nom
 
         console.log("User info:", userData);
-        console.log("Token enregistré:", localStorage.getItem('token'));
+        console.log("Token enregistré:", localStorage.getItem('c_token'));
         console.log("Rôle enregistré:", localStorage.getItem('role'));
 
         // ✅ Vérification si le token est bien présent
@@ -41,8 +41,52 @@ export class JwtService {
       })
     );
   }
-
+  
+    // Fonction pour récupérer tous les utilisateurs
+    getAllUsers(): Observable<any> {
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${localStorage.getItem('c_token')}` // ✅ Ajouter le token JWT
+      });
+  
+      return this.http.get(`${BASE_URL}users`, { headers });
+    }
+  
   log(message: string) {
     console.log(message);
   }
+  getUserById(id: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem('c_token')}`
+    });
+
+    return this.http.get(`${BASE_URL}users/${id}`, { headers });
+  }
+
+  // Fonction pour créer un utilisateur
+  createUser(user: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem('c_token')}`
+    });
+
+    return this.http.post(`${BASE_URL}users/create/`, user, { headers });
+  }
+
+  // Fonction pour mettre à jour un utilisateur
+  updateUser(id: number, user: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem('c_token')}`
+    });
+
+    return this.http.put(`${BASE_URL}users/modifier/${id}`, user, { headers });
+  }
+
+  // Fonction pour supprimer un utilisateur
+  deleteUser(id: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem('c_token')}`
+    });
+
+    return this.http.delete(`${BASE_URL}users/supprimer/${id}`, { headers });
+  }
+
 }
