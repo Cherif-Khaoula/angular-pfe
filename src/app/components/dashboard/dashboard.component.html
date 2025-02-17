@@ -1,0 +1,34 @@
+<div class="container d-flex flex-column justify-content-center align-items-center vh-100">
+    <h1 class="text-center">Bienvenue, {{ username }} ! 👋</h1>
+    <h3 class="text-center mt-3">Votre rôle est : <span class="text-primary">{{ role }}</span></h3>
+  
+    <!-- Afficher la table uniquement si le rôle est ADMIN -->
+    <div *ngIf="role === 'ADMIN'">
+      <h2>Liste des utilisateurs</h2>
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+              <button (click)="getUser(user.id)" class="btn btn-primary">Voir</button>
+              <button (click)="updateUser(user.id, user)" class="btn btn-warning">Modifier</button>
+              <button (click)="deleteUser(user.id)" class="btn btn-danger">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
