@@ -1,0 +1,86 @@
+<c-row class="justify-content-center">
+  <c-col xs="12" md="10" lg="8">
+    <c-card class="mb-4 shadow-lg">
+      <div class="card-body p-4">
+        <form [formGroup]="userForm" (ngSubmit)="ajouterEmp()">
+          <c-row class="gy-3">
+            
+            <!-- Email Field -->
+            <c-col [md]="6">
+              <label cLabel for="inputEmail4">Email</label>
+              <c-input-group class="mb-2">
+                <span cInputGroupText>&#64;</span>
+                <input 
+                  cFormControl 
+                  placeholder="Email"
+                  formControlName="email"
+                  class="form-control"
+                />
+              </c-input-group>
+              <small *ngIf="userForm.get('email')?.touched && userForm.get('email')?.invalid" class="text-danger">
+                L'email est requis et doit être valide.
+              </small>
+            </c-col>
+
+            <!-- Password Field -->
+            <c-col [md]="6">
+              <label cLabel for="inputPassword4">Mot de passe</label>
+              <c-input-group class="mb-2">
+                <span cInputGroupText>$</span>
+                <input 
+                  type="password"
+                  cFormControl 
+                  placeholder="Mot de passe" 
+                  formControlName="password"
+                  class="form-control"
+                />
+              </c-input-group>
+              <small *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid" class="text-danger">
+                Le mot de passe est requis (min. 8 caractères).
+              </small>
+            </c-col>
+
+            <!-- Name Field -->
+            <c-col [md]="6">
+              <label cLabel for="inputAddress">Nom</label>
+              <input 
+                cFormControl 
+                placeholder="Nom" 
+                formControlName="name"
+                class="form-control"
+              />
+              <small *ngIf="userForm.get('name')?.touched && userForm.get('name')?.invalid" class="text-danger">
+                Le nom est requis.
+              </small>
+            </c-col>
+
+            <!-- Role Field -->
+            <c-col [md]="6">
+              <label cLabel for="inputState">Role</label>
+              <select 
+                cSelect 
+                formControlName="role"
+                class="form-select"
+              >
+                <option value="ADMIN">ADMIN</option>
+                <option value="USER">USER</option>
+              </select>
+              <small *ngIf="userForm.get('role')?.touched && userForm.get('role')?.invalid" class="text-danger">
+                Le rôle est requis.
+              </small>
+            </c-col>
+
+            <!-- Submit Button -->
+            <c-col [xs]="12" class="d-flex justify-content-center mt-3">
+              <button type="submit" cButton color="warning" class="px-4 py-2 fw-bold rounded-3 shadow-sm"
+                [disabled]="userForm.invalid">
+                Ajouter
+              </button>
+            </c-col>
+
+          </c-row>
+        </form>
+      </div>
+    </c-card>
+  </c-col>
+</c-row>
