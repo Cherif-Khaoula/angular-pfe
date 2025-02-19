@@ -22,18 +22,25 @@
               <th class="bg-body-tertiary text-center">
                 <svg cIcon name="cilPeople"></svg>
               </th>
-              <th class="bg-body-tertiary">Nom </th>
+              <th class="bg-body-tertiary">Nom</th>
               <th class="bg-body-tertiary text-center">Email</th>
-              <th class="bg-body-tertiary">Rôle</th>
+              <th class="bg-body-tertiary">Téléphone</th>
+              <th class="bg-body-tertiary">Département</th>
+              <th class="bg-body-tertiary">Poste</th>
+              <th class="bg-body-tertiary">Statut</th>
+              <th class="bg-body-tertiary">ROLE</th>
               <th class="bg-body-tertiary text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            
-              <tr *ngFor="let user of users">
+            <tr *ngFor="let user of users">
               <td class="text-center">
-                <div class="fw-bold">{{ user.id }}</div>
+                <img *ngIf="user.photoProfil" [src]="'data:image/png;base64,' + user.photoProfil"
+     class="rounded-circle" width="40" height="40" alt="Photo de profil">
+
+                <span *ngIf="!user.photoProfil">Aucune photo</span>
               </td>
+              
               <td>
                 <div class="fw-bold">{{ user.name }}</div>
               </td>
@@ -41,19 +48,40 @@
                 <div>{{ user.email }}</div>
               </td>
               <td>
+                <div>{{ user.telephone }}</div>
+              </td>
+             
+              
+              
+              <td>
+                <div>{{ user.departement }}</div>
+              </td>
+              <td>
+                <div>{{ user.poste }}</div>
+              </td>
+             
+              <td>
                 <span class="badge" [ngClass]="{
-                  'bg-primary': user.role === 'ADMIN',
-                  'bg-success': user.role === 'USER',
-                  'bg-warning': user.role === 'MODERATEUR'
+                  'bg-success': user.statut === 'ACTIF',
+                  'bg-danger': user.statut === 'INACTIF',
+                  'bg-warning': user.statut === 'SUSPENDU'
+                }">
+                  {{ user.statut }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'bg-warning': user.role === 'ADMIN',
+                  'bg-danger': user.role === 'USER',
                 }">
                   {{ user.role }}
                 </span>
               </td>
               <td class="text-center">
-                <button class="btn btn-sm btn-outline-warning me-2" >
+                <button (click)="editUser(user.id)" class="btn btn-sm btn-outline-warning me-2">
                   <svg cIcon name="cilPencil"></svg>
                 </button>
-                <button (click)="deleteUser(user.id)" class="btn btn-sm btn-outline-danger" >
+                <button (click)="deleteUser(user.id)" class="btn btn-sm btn-outline-danger">
                   <svg cIcon name="cilTrash"></svg>
                 </button>
               </td>
@@ -65,4 +93,3 @@
     </c-card>
   </c-col>
 </c-row>
- 

@@ -9,7 +9,7 @@ import {
   ColComponent,
   RowComponent,
 } from '@coreui/angular';
-import { JwtService } from 'src/app/service/jwt.service';
+import { JwtService } from '../../../service/jwt.service';
 
 export interface User {
   id: number;

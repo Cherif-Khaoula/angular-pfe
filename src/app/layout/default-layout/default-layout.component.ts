@@ -15,7 +15,7 @@ import {
 } from '@coreui/angular';
 
 import {  DefaultHeaderComponent } from './';
-import { navItems } from './_nav';
+import { getNavItems } from './_nav';
 
 function isOverflown(element: HTMLElement) {
   return (
@@ -45,7 +45,7 @@ function isOverflown(element: HTMLElement) {
     ]
 })
 export class DefaultLayoutComponent {
-  public navItems = navItems;
+  public navItems = getNavItems();
 
   onScrollbarUpdate($event: any) {
     // if ($event.verticalUsed) {

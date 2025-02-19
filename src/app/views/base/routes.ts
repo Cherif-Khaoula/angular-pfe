@@ -27,6 +27,14 @@ export const routes: Routes = [
           title: 'ajouteuser'
         }
       },
+      {
+        path: 'edit-user/:id',
+        loadComponent: () => import('./edit-user/edit-user.component').then(m => m.EditUserComponent),
+        data: {
+          title: 'editeuser'
+        }
+      },
+      
      
     ]
   }

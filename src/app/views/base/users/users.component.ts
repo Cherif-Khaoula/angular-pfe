@@ -5,6 +5,7 @@ import {  CardBodyComponent, CardComponent, ColComponent, RowComponent, TableDir
 import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
 import { StorageService } from '../../../service/storage-service/storage.service';
+import { Router } from '@angular/router';
 
 
 
@@ -21,7 +22,8 @@ export class  usersComponent implements OnInit {
     users: any[] = [];
     selectedUser: any = {};
   
-    constructor(private jwtService: JwtService, private storageService: StorageService) {}
+  
+    constructor(private jwtService: JwtService, private storageService: StorageService ,private router :Router) {}
 
     ngOnInit() {
       this.username = StorageService.getUserName(); // ✅ Récupérer le nom
@@ -69,18 +71,12 @@ export class  usersComponent implements OnInit {
     }
   
     // Mettre à jour un utilisateur
-    updateUser(id: number, user: any) {
-      this.jwtService.updateUser(id, user).subscribe({
-        next: (data) => {
-          console.log("Utilisateur mis à jour :", data);
-          this.getUsers(); // Recharger la liste des utilisateurs
-        },
-        error: (err) => {
-          console.error("Erreur lors de la mise à jour de l'utilisateur", err);
-        }
-      });
-    }
-  
+   // Mettre à jour un utilisateur
+editUser(userId: number): void {
+  console.log(`Navigation vers edit-user/${userId}`);
+  this.router.navigate(['/base/edit-user', userId]);
+}
+
     // Supprimer un utilisateur
     deleteUser(id: number) {
       const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?");

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { catchError, map, Observable, tap } from 'rxjs';
 import { StorageService } from './storage-service/storage.service';
 import { Router } from '@angular/router';
-
+import { jwtDecode } from 'jwt-decode';
 const BASE_URL = "http://localhost:8080/api/";
 export const AUTH_HEADER = 'authorization';
 
@@ -26,28 +26,33 @@ export class JwtService {
   login(email: string, password: string): Observable<any> {
     return this.http.post<HttpResponse<any>>(`${BASE_URL}authenticate`, { email, password }, { observe: 'response' })
       .pipe(
-        tap(() => this.logAuthentication("User Authentication")),
+        tap(() => this.logAuthentication('User Authentication')),
         map((res: HttpResponse<any>) => {
           const userData = res.body;
           this.storage.saveUser(userData);
+
           const authHeader = res.headers.get(AUTH_HEADER);
           if (authHeader) {
             const bearerToken = authHeader.substring(7);
             this.storage.saveToken(bearerToken);
-  
-            // Afficher le token dans la console
+
+            try {
+              const decodedToken: any = jwtDecode(bearerToken);
+              const role = decodedToken.role || 'USER';
+              localStorage.setItem('c_role', role);
+            } catch (error) {
+              console.error('Erreur lors du décodage du token:', error);
+            }
+
             console.log('Token enregistré:', bearerToken);
           } else {
-            console.error("Erreur: Aucun token trouvé dans l'en-tête de la réponse");
+            console.error('Erreur: Aucun token trouvé dans l’en-tête de la réponse');
           }
-  
-          // Rediriger l'utilisateur après une connexion réussie
-          
+
           return res;
         }),
         catchError((error) => {
           console.error('Authentication failed', error);
-          // Afficher un message d'erreur et rediriger vers la page de login
           this.router.navigate(['/login']);
           throw error;
         })
@@ -84,11 +89,15 @@ export class JwtService {
   logout(): void {
     localStorage.removeItem('c_token');
     localStorage.removeItem('c_role');
+    localStorage.removeItem('c_user');
     this.router.navigate(['/login']);
   }
+
 
   // Fonction pour gérer les logs
   logAuthentication(message: string): void {
     console.log(message);
   }
 }
+
+

@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
       const role = StorageService.getUserRole(); // Récupère le rôle de l'utilisateur (par exemple 'admin', 'user', etc.)
 
       if (role === 'ADMIN') {
-        this.router.navigate(['/admin/dashboard']); // Rediriger vers le tableau de bord de l'admin
+        this.router.navigate(['/dashboard']); // Rediriger vers le tableau de bord de l'admin
       } else if (role === 'USER') {
         this.router.navigate(['/user/dashboard']); // Rediriger vers le tableau de bord de l'utilisateur
       } else {

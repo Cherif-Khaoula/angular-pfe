@@ -23,7 +23,7 @@ export const routes: Routes = [
     }
   },
    {
-    path: 'admin/dashboard',
+    path: 'dashboard',
     loadChildren: () => import('../dashboard/dashboard.component').then((m) => m.DashboardComponent)
   },
   {

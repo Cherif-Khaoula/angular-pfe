@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-
+import { jwtDecode } from 'jwt-decode';
 const USER = "c_user";
 const TOKEN = "c_token";
 
@@ -26,11 +26,6 @@ export class StorageService {
     return user ? JSON.parse(user) : null;
   }
 
-  // Méthode statique pour récupérer le rôle de l'utilisateur
-  static getUserRole(): string {
-    const user = this.getUser();
-    return user ? user.role : '';
-  }
 
   // Méthode statique pour récupérer le nom de l'utilisateur
   static getUserName(): string {
@@ -72,4 +67,17 @@ export class StorageService {
   static isLoggedIn(): boolean {
     return this.getToken() !== null;
   }
+  static getUserRole(): string {
+    const token = this.getToken();
+    if (!token) return '';
+
+    try {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.role || '';
+    } catch (error) {
+      console.error('Erreur lors du décodage du token:', error);
+      return '';
+    }
+  }
 }
+

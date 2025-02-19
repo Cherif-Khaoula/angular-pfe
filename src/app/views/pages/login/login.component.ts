@@ -69,11 +69,9 @@ export class LoginComponent implements OnInit {
       this.loginForm.get(['password'])!.value,
     ).subscribe((response) => {
         console.log(response);
-        if (StorageService.isAdminLoggedIn()) {
-          this.router.navigateByUrl("admin/dashboard");
-        } else if (StorageService.isUserLoggedIn()) {
-          this.router.navigateByUrl("user/dashboard");
-        }
+        
+          this.router.navigateByUrl("dashboard");
+        
       },
       error => {
         if (error.status == 406) {

@@ -17,9 +17,9 @@ export const routes: Routes = [
     },
     children: [
       {
-        path: 'admin/dashboard',
+        path: 'dashboard',
         loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes),
-        canActivate: [AdminGuard]
+        
       }
       ,
       
@@ -44,13 +44,7 @@ export const routes: Routes = [
       title: 'Page 404'
     }
   },
-  {
-    path: 'user/dashboard',
-    loadComponent: () => import('./views/pages/user-dashboard/user-dashboard.component').then(m => m.UserDashboardComponent),canActivate: [userGuard],
-    data: {
-      title: 'Page user'
-    }
-  },
+  
   {
     path: '500',
     loadComponent: () => import('./views/pages/page500/page500.component').then(m => m.Page500Component),
