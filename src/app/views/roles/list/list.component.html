@@ -1,0 +1,68 @@
+
+           <c-row>
+            <c-col xs>
+              <c-card class="mb-4 shadow-sm">
+                <c-card-body>
+          
+                  <!-- Barre de recherche -->
+                  <div class="d-flex justify-content-between mb-3">
+                    <h5 class="mb-0">Gestion des roles</h5>
+                    <input type="text" class="form-control w-25" placeholder="Rechercher..." >
+                  </div>
+          
+                  <table
+                    [hover]="true"
+                    [responsive]="true"
+                    [striped]="true"
+                    align="middle"
+                    cTable
+                    class="mb-0 border"
+                  >
+                    <thead class="text-nowrap text-truncate">
+                      <tr>
+                        <th class="bg-body-tertiary text-center">
+                          <svg cIcon name="cilPeople"></svg>
+                        </th>
+                        <th class="bg-body-tertiary">Nom</th>
+                        <th class="bg-body-tertiary text-center">Permissions</th>
+                        
+                        <th  class="bg-body-tertiary text-center">
+                          Actions
+                        </th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let role of roles">
+                        <td class="text-center">
+                          <div class="fw-bold">{{ role.id }}</div>
+                        </td>
+                        <td class="text-truncate">
+                          <div class="fw-bold">{{ role.name }}</div>
+                        </td>
+                        <td>
+                        <span *ngFor="let perm of role.permissions" class="badge bg-primary me-1">
+                          {{ perm.name }}
+                        </span>
+          </td>
+        
+          <!-- Vérification des permissions avant d'afficher la colonne Actions -->
+          <td *ngIf="hasPermission(role, 'MODIFIERROLE') || hasPermission(role, 'SUPPRIMERROLE')" class="text-center">
+            <button *ngIf="hasPermission(role, 'MODIFIERROLE')" (click)="editrole(role.id)" class="btn btn-sm btn-outline-warning me-2">
+              <svg cIcon name="cilPencil"></svg>
+            </button>
+            <button *ngIf="hasPermission(role, 'SUPPRIMERROLE')" (click)="deleterole(role.id)" class="btn btn-sm btn-outline-danger">
+              <svg cIcon name="cilTrash"></svg>
+            </button>
+          </td>
+          
+   
+                      </tr>
+                    </tbody>
+                  </table>
+          
+                </c-card-body>
+              </c-card>
+            </c-col>
+          </c-row>
+          

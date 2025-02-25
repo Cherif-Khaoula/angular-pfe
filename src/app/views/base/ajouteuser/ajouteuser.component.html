@@ -55,25 +55,40 @@
             </c-col>
 
             <!-- Role Field -->
-            <c-col [md]="6">
-              <label cLabel for="inputState">Role</label>
-              <select 
-                cSelect 
-                formControlName="role"
-                class="form-select"
-              >
-                <option value="ADMIN">ADMIN</option>
-                <option value="USER">USER</option>
-              </select>
-              <small *ngIf="userForm.get('role')?.touched && userForm.get('role')?.invalid" class="text-danger">
-                Le rôle est requis.
-              </small>
-            </c-col>
+            <!-- Champ des rôles amélioré -->
+<c-col [md]="6">
+  <label cLabel>Rôles</label>
+  <div class="border rounded p-2">
+    <c-form-check *ngFor="let role of (roles$ | async); trackBy: trackByRole" class="mb-1">
+      <input 
+        type="checkbox" 
+        cFormCheckInput 
+        [value]="role"
+        (change)="onRoleChange($event, role)"
+        [checked]="userForm.get('roles')?.value.includes(role)"
+      />
+      <label cFormCheckLabel class="ms-2">{{ role }}</label>
+    </c-form-check>
+  </div>
+  <small *ngIf="userForm.get('roles')?.touched && userForm.get('roles')?.invalid" class="text-danger">
+    Au moins un rôle doit être sélectionné.
+  </small>
+</c-col>
+
+            
+           
+            
+            
 
             <!-- Submit Button -->
             <c-col [xs]="12" class="d-flex justify-content-center mt-3">
-              <button type="submit" cButton color="warning" class="px-4 py-2 fw-bold rounded-3 shadow-sm"
-                [disabled]="userForm.invalid">
+              <button 
+                type="submit" 
+                cButton 
+                color="warning" 
+                class="px-4 py-2 fw-bold rounded-3 shadow-sm"
+                [disabled]="userForm.invalid"
+              >
                 Ajouter
               </button>
             </c-col>

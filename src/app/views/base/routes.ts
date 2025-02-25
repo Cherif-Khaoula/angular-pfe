@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { baseGuard } from '../../guards/base.guard';
 
 export const routes: Routes = [
   {
@@ -16,24 +17,21 @@ export const routes: Routes = [
       {
         path: 'users',
         loadComponent: () => import('./users/users.component').then(m => m.usersComponent),
-        data: {
-          title: 'users'
-        }
+        data: { title: 'users', permissions: ['GETALLUSER'] }, // 🔒 Ajout des permissions requises
+        canActivate: [baseGuard]
       },
       {
         path: 'ajouteuser',
         loadComponent: () => import('./ajouteuser/ajouteuser.component').then(m => m.AppajouteuserComponent),
-        data: {
-          title: 'ajouteuser'
-        }
+        data: { title: 'ajouteuser', permissions: ['AJOUTERUSER'] }, // 🔒 Protection ajout d'utilisateur
+        canActivate: [baseGuard]
       },
       {
         path: 'edit-user/:id',
         loadComponent: () => import('./edit-user/edit-user.component').then(m => m.EditUserComponent),
-        data: {
-          title: 'editeuser'
-        }
-      },
+        data: { title: 'editeuser', permissions: ['MODIFIERUSER'] }, // 🔒 Protection édition
+        canActivate: [baseGuard]
+      }
       
      
     ]

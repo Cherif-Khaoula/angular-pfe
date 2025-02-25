@@ -4,6 +4,7 @@ import { NgScrollbar } from 'ngx-scrollbar';
 
 import {
   ContainerComponent,
+  INavData,
   ShadowOnScrollDirective,
   SidebarBrandComponent,
   SidebarComponent,
@@ -16,6 +17,7 @@ import {
 
 import {  DefaultHeaderComponent } from './';
 import { getNavItems } from './_nav';
+import { StorageService } from '../../service/storage-service/storage.service';
 
 function isOverflown(element: HTMLElement) {
   return (
@@ -45,8 +47,11 @@ function isOverflown(element: HTMLElement) {
     ]
 })
 export class DefaultLayoutComponent {
-  public navItems = getNavItems();
+  public navItems: INavData[];
 
+  constructor(private storageService: StorageService) {
+    this.navItems = getNavItems(this.storageService);
+  }
   onScrollbarUpdate($event: any) {
     // if ($event.verticalUsed) {
     // console.log('verticalUsed', $event.verticalUsed);

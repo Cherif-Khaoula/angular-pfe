@@ -1,8 +1,8 @@
 import { INavData } from '@coreui/angular';
-import { StorageService } from '../../service/storage-service/storage.service'; // Assure-toi que ce service récupère le rôle de l'utilisateur
+import { StorageService } from '../../service/storage-service/storage.service';
 
-export function getNavItems(): INavData[] {
-  const role = StorageService.getUserRole(); // Récupère le rôle de l'utilisateur connecté
+export function getNavItems(storageService: StorageService): INavData[] {
+  const permissions = storageService.getPermissions(); // Récupère les permissions de l'utilisateur
 
   const navItems: INavData[] = [
     {
@@ -16,33 +16,106 @@ export function getNavItems(): INavData[] {
     }
   ];
 
-  if (role === 'ADMIN') {
-    navItems.push({
+  // Gestion des utilisateurs
+  if (permissions.includes('GETALLUSER') || permissions.includes('AJOUTERUSER')) {
+    const userMenu: INavData = {
       name: 'Utilisateurs',
       url: '/base',
       iconComponent: { name: 'cil-puzzle' },
-      children: [
-        {
-          name: 'Gestion des Utilisateurs',
-          url: '/base/users',
-          icon: 'nav-icon-bullet'
-        },
-        {
-          name: 'Ajouter un utilisateur',
-          url: '/base/ajouteuser',
-          icon: 'nav-icon-bullet'
-        }
-      ]
-    });
+      children: [],
+    };
+
+    if (permissions.includes('GETALLUSER')) {
+      userMenu.children!.push({
+        name: 'Gestion des Utilisateurs',
+        url: '/base/users',
+        icon: 'nav-icon-bullet'
+      });
+    }
+
+    if (permissions.includes('AJOUTERUSER')) {
+      userMenu.children!.push({
+        name: 'Ajouter un utilisateur',
+        url: '/base/ajouteuser',
+        icon: 'nav-icon-bullet'
+      });
+    }
+
+
+    if (userMenu.children!.length > 0) {
+      navItems.push(userMenu);
+    }
   }
 
-  if (role === 'USER') {
+  // Gestion des rôles
+  if (permissions.includes('GETALLROLE') || permissions.includes('AJOUTERROLE') || permissions.includes('MODIFERROLE')) {
+    const roleMenu: INavData = {
+      name: 'Rôles',
+      url: '/roles',
+      iconComponent: { name: 'cil-people' },
+      children: [],
+    };
+
+    if (permissions.includes('GETALLROLE')) {
+      roleMenu.children!.push({
+        name: 'Voir les rôles',
+        url: '/roles/list',
+        icon: 'nav-icon-bullet'
+      });
+    }
+
+    if (permissions.includes('AJOUTERROLE')) {
+      roleMenu.children!.push({
+        name: 'Ajouter un rôle',
+        url: '/roles/add',
+        icon: 'nav-icon-bullet'
+      });
+    }
+
+    if (permissions.includes('MODIFERROLE')) {
+      roleMenu.children!.push({
+        name: 'Modifier un rôle',
+        url: '/roles/edit',
+        icon: 'nav-icon-bullet'
+      });
+    }
+
+    if (permissions.includes('SUPPRIMERROLE')) {
+      roleMenu.children!.push({
+        name: 'Supprimer un rôle',
+        url: '/roles/delete',
+        icon: 'nav-icon-bullet'
+      });
+    }
+
+    if (roleMenu.children!.length > 0) {
+      navItems.push(roleMenu);
+    }
+  }
+
+  // Profil utilisateur
+  
     navItems.push({
       name: 'Mon Profil',
-      url: '',
+      url: '/profile',
       iconComponent: { name: 'cil-user' },
     });
-  }
+     // Gestion des e-mails
+  const emailMenu: INavData = {
+    name: 'E-mails',
+    url: '/mails',
+    iconComponent: { name: 'cil-envelope-open' },
+    children: [
+      {
+        name: 'Envoyer un e-mail',
+        url: '/mails/send',
+        icon: 'nav-icon-bullet'
+      }
+    ],
+  };
 
+  navItems.push(emailMenu);
+
+  
   return navItems;
 }

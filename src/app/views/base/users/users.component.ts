@@ -1,77 +1,81 @@
-import { Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { JwtService } from '../../../service/jwt.service';
-import {  CardBodyComponent, CardComponent, ColComponent, RowComponent, TableDirective, TextColorDirective } from '@coreui/angular';
-import { IconDirective } from '@coreui/icons-angular';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StorageService } from '../../../service/storage-service/storage.service';
 import { Router } from '@angular/router';
-
-
-
+import { ReactiveFormsModule } from '@angular/forms';
+import { UserService } from '../../../service/user.service';
+import { StorageService } from '../../../service/storage-service/storage.service';
+import {  
+  CardBodyComponent, CardComponent, ColComponent, RowComponent, TableDirective, TextColorDirective 
+} from '@coreui/angular';
+import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
-    selector: 'app-users',
-    templateUrl: './users.component.html',
-    styleUrls: ['./users.component.scss'],
-    imports: [CommonModule ,TextColorDirective, CardComponent, CardBodyComponent, RowComponent, ColComponent, IconDirective, ReactiveFormsModule, TableDirective]
-  })
-export class  usersComponent implements OnInit {
-    username: string = 'Utilisateur';
-    role: string = 'Utilisateur'; // ✅ Variable pour le rôle
-    users: any[] = [];
-    selectedUser: any = {};
-  
-  
-    constructor(private jwtService: JwtService, private storageService: StorageService ,private router :Router) {}
+  selector: 'app-users',
+  templateUrl: './users.component.html',
+  styleUrls: ['./users.component.scss'],
+  imports: [CommonModule, TextColorDirective, CardComponent, CardBodyComponent, RowComponent, ColComponent, IconDirective, ReactiveFormsModule, TableDirective]
+})
+export class usersComponent implements OnInit {
+  username: string = 'Utilisateur';
+  users: any[] = [];
+  selectedUser: any = {};
+  permissions: string[] = [];
+  roles: string[] = []; 
+  canModifyUser: boolean = false;
+  canDeleteUser: boolean = false;
 
-    ngOnInit() {
-      this.username = StorageService.getUserName(); // ✅ Récupérer le nom
-      this.role = StorageService.getUserRole();
-      this.getUsers(); // ✅ Récupérer les utilisateurs
+  constructor(private userService: UserService, private storageService: StorageService, private router: Router) {}
+
+  ngOnInit() {
+    this.loadUserData();
+    this.getUsers();
+  }
+
+  /**
+   * Charge les informations de l'utilisateur connecté depuis le token
+   */
+  loadUserData() {
+    this.username = this.storageService.getUserName();
+
+    // Récupération des rôles et permissions depuis le token
+    this.roles = this.storageService.getUserRoles();
+    this.permissions = this.storageService.getPermissions();
+
+    // Vérification des permissions de l'utilisateur
+    this.canModifyUser = this.permissions.includes('MODIFIERUSER');
+    this.canDeleteUser = this.permissions.includes('SUPPRIMERUSER');
+  }
+  getUserRoles(user: any): string {
+    if (!user.roles || user.roles.length === 0) {
+      return 'Aucun rôle';
     }
+    return user.roles.map((role: any) => role.nom).join(', ');
+  }
   
-    // Récupérer tous les utilisateurs
-    getUsers() {
-      this.jwtService.getAllUsers().subscribe({
-        next: (data) => {
-          this.users = data; // Stocker les utilisateurs
-          console.log("Utilisateurs récupérés :", this.users);
-        },
-        error: (err) => {
-          console.error("Erreur lors de la récupération des utilisateurs", err);
-        }
-      });
-    }
+  /**
+   * Récupérer tous les utilisateurs et ajouter une vérification des rôles
+   */
+  getUsers() {
+    this.userService.getAllUsers().subscribe({
+      next: (data) => {
+        this.users = data.map((user: any) => ({
+          ...user,
+          roles: user.roles && user.roles.length > 0 ? user.roles : [{ name: "Aucun rôle" }]
+        }));
   
-    // Récupérer un utilisateur par ID
-    getUser(id: number) {
-      this.jwtService.getUserById(id).subscribe({
-        next: (data) => {
-          this.selectedUser = data; // Utilisateur sélectionné
-          console.log("Utilisateur récupéré :", this.selectedUser);
-        },
-        error: (err) => {
-          console.error("Erreur lors de la récupération de l'utilisateur", err);
-        }
-      });
-    }
+        console.log("Utilisateurs récupérés :", this.users);
+      },
+      error: (err) => {
+        console.error("Erreur lors de la récupération des utilisateurs", err);
+      }
+    });
+  }
   
-    // Créer un nouvel utilisateur
-    createUser(user: any) {
-      this.jwtService.createUser(user).subscribe({
-        next: (data) => {
-          console.log("Utilisateur créé :", data);
-          this.getUsers(); // Recharger la liste des utilisateurs
-        },
-        error: (err) => {
-          console.error("Erreur lors de la création de l'utilisateur", err);
-        }
-      });
-    }
-  
-    // Mettre à jour un utilisateur
-   // Mettre à jour un utilisateur
+
+  /**
+   * Modifier un utilisateur si l'utilisateur a la permission
+   */
+     // Mettre à jour un utilisateur
 editUser(userId: number): void {
   console.log(`Navigation vers edit-user/${userId}`);
   this.router.navigate(['/base/edit-user', userId]);
@@ -81,20 +85,27 @@ editUser(userId: number): void {
     deleteUser(id: number) {
       const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?");
       if (confirmation) {
-        this.jwtService.deleteUser(id).subscribe({
-          next: () => {
+        console.log(`Tentative de suppression de l'utilisateur avec ID: ${id}`);
+    
+        this.userService.deleteUser(id).subscribe({
+          next: (response) => {
+            console.log("Réponse de l'API :", response);
             alert("Utilisateur supprimé avec succès !");
             this.getUsers(); // Recharger la liste des utilisateurs
           },
           error: (err) => {
             console.error("Erreur lors de la suppression de l'utilisateur", err);
+            alert("Erreur lors de la suppression de l'utilisateur. Consultez la console.");
           }
         });
       }
     }
     
-    // Méthode appelée lors du clic sur le bouton de déconnexion
-    onLogout(): void {
-      this.jwtService.logout();
-    }
+    
+  /**
+   * Déconnexion de l'utilisateur
+   */
+  onLogout(): void {
+    this.userService.logout();
   }
+}

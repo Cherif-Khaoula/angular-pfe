@@ -1,0 +1,40 @@
+
+           <div class="card">
+             <div class="card-header">
+               <h5>Envoyer un E-mail</h5>
+             </div>
+             <div class="card-body">
+               <form (ngSubmit)="sendEmail()">
+                 <!-- Champ Email -->
+                 <div class="mb-3">
+                   <label for="to" class="form-label">Destinataire</label>
+                   <input type="email" id="to" class="form-control" [(ngModel)]="emailData.to" name="to" required />
+                 </div>
+           
+                 <!-- Champ Objet -->
+                 <div class="mb-3">
+                   <label for="subject" class="form-label">Objet</label>
+                   <input type="text" id="subject" class="form-control" [(ngModel)]="emailData.subject" name="subject" required />
+                 </div>
+           
+                 <!-- Zone de texte Contenu -->
+                 <div class="mb-3">
+                   <label for="text" class="form-label">Message</label>
+                   <textarea id="text" class="form-control" [(ngModel)]="emailData.text" name="text" rows="4" required></textarea>
+                 </div>
+           
+                 <!-- Sélection de fichier -->
+                 <div class="mb-3">
+                   <label for="file" class="form-label">Pièce jointe (optionnelle)</label>
+                   <input type="file" id="file" class="form-control" (change)="onFileSelected($event)" />
+                 </div>
+           
+                 <!-- Bouton d'envoi -->
+                 <button cButton color="primary" class="mt-2" [disabled]="isLoading">
+                   <c-spinner *ngIf="isLoading" aria-hidden="true" size="sm"></c-spinner>
+                   {{ isLoading ? 'Envoi en cours...' : 'Envoyer' }}
+                 </button>
+               </form>
+             </div>
+           </div>
+           

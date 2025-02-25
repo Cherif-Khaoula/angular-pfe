@@ -1,92 +1,98 @@
 import { Component, OnInit } from '@angular/core';
-import {FormGroup, FormControl, Validators, ReactiveFormsModule} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JwtService } from '../../../service/jwt.service';
-import {
-  CardComponent,
-  ColComponent,
-  FormControlDirective,
-  FormLabelDirective,
-  InputGroupComponent, InputGroupTextDirective,
-  RowComponent
-} from "@coreui/angular";
-import {NgIf} from "@angular/common";
-import {IconDirective} from "@coreui/icons-angular";
+import { UserService } from '../../../service/user.service';
+import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { ButtonDirective, FormModule } from '@coreui/angular';
+import { CardComponent, ColComponent, RowComponent } from '@coreui/angular';
 
 @Component({
   selector: 'app-edit-user',
   templateUrl: './edit-user.component.html',
+  styleUrls: ['./edit-user.component.scss'],
+  standalone: true,
   imports: [
-    ColComponent,
-    ReactiveFormsModule,
-    RowComponent,
     CardComponent,
-    InputGroupComponent,
-    FormControlDirective,
-    FormLabelDirective,
-    InputGroupTextDirective,
-    NgIf,
-    IconDirective
-  ],
-  styleUrls: ['./edit-user.component.scss']
+    ColComponent,
+    RowComponent,
+    FormModule,
+    ButtonDirective,
+    FormsModule,
+    CommonModule,
+    ReactiveFormsModule, 
+  ]
 })
 export class EditUserComponent implements OnInit {
-  editUserForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.minLength(8)]), // Minimum 8 caractères pour le mot de passe
-    role: new FormControl('', [Validators.required])
-  });
-  userId: number = 0;
-  showConfirmationAlert: boolean = false;
+  editUserForm!: FormGroup;
+  roles$: Observable<{ id: number; name: string; }[]> | undefined;
+  selectedRoles: number[] = [];
 
+  userId!: number;
+  
+  
   constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
     private route: ActivatedRoute,
-    private jwtService: JwtService,
     private router: Router
   ) {}
 
-  ngOnInit(): void {
-    // Récupérer l'ID de l'utilisateur depuis l'URL
-    this.userId = Number(this.route.snapshot.paramMap.get('id'));
-    this.getUserDetails(this.userId);
-  }
-
-  getUserDetails(id: number): void {
-    this.jwtService.getUserById(id).subscribe({
-      next: (data) => {
-        this.editUserForm.setValue({
-          name: data.name,
-          email: data.email,
-          password: '', // On garde le champ vide pour des raisons de sécurité
-          role: data.role
-        });
-      },
-      error: (err) => {
-        console.error("Erreur lors de la récupération des détails de l'utilisateur", err);
-      }
+  ngOnInit() {
+    const userId = Number(this.route.snapshot.paramMap.get('id'));
+  
+    this.roles$ = this.userService.getAllRoles();
+  
+    this.userService.getUserById(userId).subscribe((user: any) => {
+      console.log("Utilisateur récupéré :", user); // 🔍 Debug ici
+  
+      this.selectedRoles = user.roles.map((r: any) => r.id);
+  
+      this.editUserForm = this.fb.group({
+        name: [user.name, [Validators.required]],
+        email: [user.email, [Validators.required, Validators.email]],
+        password: [''],
+        roles: [this.selectedRoles, [Validators.required, Validators.minLength(1)]],
+      });
+  
+      console.log("Valeur de l'email après assignation :", this.editUserForm.get('email')?.value); // 🔍 Debug ici
     });
   }
+  
 
-  isUpdated: boolean = false;
+  onRoleChange(event: Event, roleId: number) {
+    const checked = (event.target as HTMLInputElement).checked;
+    const rolesControl = this.editUserForm.get('roles');
 
-  onUpdateUser(): void {
-    if (confirm("Êtes-vous sûr de vouloir modifier cet utilisateur ?")) {
-      this.jwtService.updateUser(this.userId, this.editUserForm.value).subscribe({
-        next: () => {
-          this.router.navigate(['/base/users']); // Redirection immédiate après confirmation de la modification
-        },
-        error: (err) => {
-          console.error("Erreur lors de la mise à jour de l'utilisateur", err);
-          alert("Erreur lors de la mise à jour. Veuillez réessayer.");
-        }
-      });
-    } else {
-      this.router.navigate(['/base/users']);
+    if (rolesControl) {
+      let updatedRoles = [...rolesControl.value];
+      
+      if (checked) {
+        updatedRoles.push(roleId);
+      } else {
+        updatedRoles = updatedRoles.filter(id => id !== roleId);
+      }
+      
+      rolesControl.setValue(updatedRoles);
     }
   }
 
+  onSubmit() {
+    if (this.editUserForm.invalid) return;
+
+    const userId = Number(this.route.snapshot.paramMap.get('id'));
+    const updatedUser = {
+      ...this.editUserForm.value,
+      roles: this.editUserForm.value.roles.map((id: number) => ({ id })),
+    };
+
+    this.userService.updateUser(userId, updatedUser).subscribe(() => {
+      console.log('Utilisateur mis à jour avec succès');
+      this.router.navigate(['/users']);
+    });
+  }
+
+  trackByRole(index: number, role: { id: number; name: string }) {
+    return role.id;
+  }
 }
-
-
-

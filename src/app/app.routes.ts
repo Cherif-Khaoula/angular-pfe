@@ -3,6 +3,7 @@ import { DefaultLayoutComponent } from './layout';
 import { AdminGuard } from './guards/admin.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { userGuard } from './guards/user.guard';
+import { dashboardGuard } from './guards/dashboard.guard';
 export const routes: Routes = [
   {
     path: '',
@@ -18,17 +19,24 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes),
-        
+        loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes)
+        ,canActivate: [dashboardGuard]
       }
       ,
       
       {
         path: 'base',
-        loadChildren: () => import('./views/base/routes').then((m) => m.routes),canActivate: [AdminGuard]
+        loadChildren: () => import('./views/base/routes').then((m) => m.routes)
       },
-     
-     
+      {
+        path: 'roles',
+        loadChildren: () => import('./views/roles/routes').then((m) => m.routes)
+      }
+      ,
+      {
+        path: 'mails',
+        loadChildren: () => import('./views/mail/routes').then((m) => m.routes)
+      },
      
       {
         path: 'pages',

@@ -13,8 +13,8 @@ export class AdminGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean {
-    const role = StorageService.getUserRole(); // Récupérer le rôle de l'utilisateur
-    const isLoggedIn = StorageService.isLoggedIn(); // Vérifier si l'utilisateur est connecté
+    const role = this.storageService.getUserRole(); // Récupérer le rôle de l'utilisateur
+    const isLoggedIn = this.storageService.isLoggedIn(); // Vérifier si l'utilisateur est connecté
 
     if (isLoggedIn) {
       if (role === 'ADMIN') {

@@ -1,99 +1,99 @@
 <c-row class="justify-content-center">
-             <c-col xs="12" md="10" lg="8">
-               <c-card class="mb-4 shadow-lg">
-                 <div class="card-body p-4">
-                   <form [formGroup]="editUserForm" (ngSubmit)="onUpdateUser()">
-                     <c-row class="gy-3">
-           
-                       <!-- Name Field -->
-                       <c-col [md]="6">
-                         <label cLabel for="name">Nom</label>
-                         <c-input-group class="mb-2">
-                           <span cInputGroupText><svg cIcon name="cilUser"></svg></span>
-                           <input
-                             id="name"
-                             cFormControl
-                             placeholder="Nom"
-                             formControlName="name"
-                             class="form-control"
-                           />
-                         </c-input-group>
-                         <small *ngIf="editUserForm.get('name')?.touched && editUserForm.get('name')?.invalid" class="text-danger">
-                           L'email est requis et doit être valide.
-                         </small>
-                       </c-col>
-                       <!-- Email Field -->
-                       <c-col [md]="6">
-                         <label cLabel for="email">Email</label>
-                         <c-input-group class="mb-2">
-                           <span cInputGroupText><svg cIcon name="cilEnvelopeClosed"></svg></span>
-                           <input
-                             id="email"
-                             cFormControl
-                             placeholder="Email"
-                             formControlName="email"
-                             class="form-control"
-                             type="email"
-                           />
-                         </c-input-group>
-                         <small *ngIf="editUserForm.get('email')?.touched && editUserForm.get('email')?.invalid" class="text-danger">
-                           L'email est requis et doit être valide.
-                         </small>
-                       </c-col>
-           
-                       <!-- Password Field -->
-                       <c-col [md]="6">
-                         <label cLabel for="password">Mot de passe</label>
-                         <c-input-group class="mb-2">
-                           <span cInputGroupText><svg cIcon name="cilLockLocked"></svg></span>
-                           <input
-                             id="password"
-                             type="password"
-                             cFormControl
-                             placeholder="Mot de passe"
-                             formControlName="password"
-                             class="form-control"
-                           />
-                         </c-input-group>
-                         <small *ngIf="editUserForm.get('password')?.touched && editUserForm.get('password')?.invalid" class="text-danger">
-                           Le mot de passe est requis (min. 8 caractères).
-                         </small>
-                       </c-col>
-           
-                       <!-- Role Field -->
-                       <c-col [md]="6">
-                         <label cLabel for="role">Rôle</label>
-                         <select
-                           id="role"
-                           cSelect
-                           formControlName="role"
-                           class="form-select"
-                         >
-                           <option value="ADMIN">ADMIN</option>
-                           <option value="USER">USER</option>
-                         </select>
-                         <small *ngIf="editUserForm.get('role')?.touched && editUserForm.get('role')?.invalid" class="text-danger">
-                           Le rôle est requis.
-                         </small>
-                       </c-col>
-           
-                       <!-- Submit Button -->
-                       <c-col [xs]="12" class="d-flex justify-content-center mt-3">
-                         <button
-                           type="submit"
-                           cButton
-                           class="custom-purple-button px-4 py-2 fw-bold rounded-3 shadow-sm"
-                           [disabled]="editUserForm.invalid"
-                         >
-                           Modifier
-                         </button>
-                       </c-col>
-           
-           
-                     </c-row>
-                   </form>
-                 </div>
-               </c-card>
-             </c-col>
-           </c-row>
-           
+  <c-col xs="12" md="10" lg="8">
+    <c-card class="mb-4 shadow-lg">
+      <div class="card-body p-4">
+        <form [formGroup]="editUserForm" (ngSubmit)="onSubmit()">
+          <c-row class="gy-3">
+            
+            <!-- Email Field -->
+            <c-col [md]="6">
+              <label cLabel for="inputEmail4">Email</label>
+              <c-input-group class="mb-2">
+                <span cInputGroupText>&#64;</span>
+                <input 
+                  cFormControl 
+                  placeholder="email" 
+                  formControlName="email"
+                  class="form-control"
+                />
+              </c-input-group>
+              <small *ngIf="editUserForm.get('email')?.touched && editUserForm.get('email')?.invalid" class="text-danger">
+                L'email est requis et doit être valide.
+              </small>
+            </c-col>
+
+            <!-- Password Field -->
+            <c-col [md]="6">
+              <label cLabel for="inputPassword4">Mot de passe</label>
+              <c-input-group class="mb-2">
+                <span cInputGroupText>$</span>
+                <input 
+                  type="password"
+                  cFormControl 
+                  placeholder="Mot de passe" 
+                  formControlName="password"
+                  class="form-control"
+                />
+              </c-input-group>
+              <small *ngIf="editUserForm.get('password')?.touched && editUserForm.get('password')?.invalid" class="text-danger">
+                Le mot de passe est requis (min. 8 caractères).
+              </small>
+            </c-col>
+
+            <!-- Name Field -->
+            <c-col [md]="6">
+              <label cLabel for="inputAddress">Nom</label>
+              <input 
+                cFormControl 
+                placeholder="Nom" 
+                formControlName="name"
+                class="form-control"
+              />
+              <small *ngIf="editUserForm.get('name')?.touched && editUserForm.get('name')?.invalid" class="text-danger">
+                Le nom est requis.
+              </small>
+            </c-col>
+
+            <!-- Role Field -->
+            <c-col [md]="6">
+              <label cLabel>Rôles</label>
+              <div class="border rounded p-2">
+                <c-form-check *ngFor="let role of (roles$ | async); trackBy: trackByRole" class="mb-1">
+                  <input 
+                  type="checkbox" 
+                  cFormCheckInput 
+                  [value]="role.id"
+                  (change)="onRoleChange($event, role.id)"
+                  [checked]="editUserForm.get('roles')?.value.includes(role.id)"
+                />
+                <label cFormCheckLabel class="ms-2">{{ role.name }}</label>
+                
+
+
+                  
+                </c-form-check>
+              </div>
+              <small *ngIf="editUserForm.get('roles')?.touched && editUserForm.get('roles')?.invalid" class="text-danger">
+                Au moins un rôle doit être sélectionné.
+              </small>
+            </c-col>
+            
+            <!-- Submit Button -->
+            <c-col [xs]="12" class="d-flex justify-content-center mt-3">
+              <button 
+                type="submit" 
+                cButton 
+                color="warning" 
+                class="px-4 py-2 fw-bold rounded-3 shadow-sm"
+                [disabled]="editUserForm.invalid"
+              >
+                Modifier
+              </button>
+            </c-col>
+
+          </c-row>
+        </form>
+      </div>
+    </c-card>
+  </c-col>
+</c-row>

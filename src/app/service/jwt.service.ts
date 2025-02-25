@@ -4,6 +4,7 @@ import { catchError, map, Observable, tap } from 'rxjs';
 import { StorageService } from './storage-service/storage.service';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+
 const BASE_URL = "http://localhost:8080/api/";
 export const AUTH_HEADER = 'authorization';
 
@@ -12,9 +13,9 @@ export const AUTH_HEADER = 'authorization';
 })
 export class JwtService {
 
-  constructor(private http: HttpClient, private storage: StorageService , private router: Router) { }
+  constructor(private http: HttpClient, private storage: StorageService, private router: Router) { }
 
-  // Méthode centralisée pour obtenir l'authentification header
+  // Méthode pour obtenir l'authentification header
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('c_token');
     return new HttpHeaders({
@@ -38,8 +39,15 @@ export class JwtService {
 
             try {
               const decodedToken: any = jwtDecode(bearerToken);
-              const role = decodedToken.role || 'USER';
+              
+              // Stocker le rôle
+              const role = decodedToken.roles ? decodedToken.roles[0] : 'USER';
               localStorage.setItem('c_role', role);
+
+              // Stocker les permissions
+              const permissions = decodedToken.permissions || [];
+              localStorage.setItem('c_permissions', JSON.stringify(permissions));
+
             } catch (error) {
               console.error('Erreur lors du décodage du token:', error);
             }
@@ -59,45 +67,22 @@ export class JwtService {
       );
   }
 
-  // Fonction pour récupérer tous les utilisateurs
-  getAllUsers(): Observable<any> {
-    return this.http.get(`${BASE_URL}users`, { headers: this.getAuthHeaders() });
-  }
-
-  // Fonction pour récupérer un utilisateur par ID
-  getUserById(id: number): Observable<any> {
-    return this.http.get(`${BASE_URL}users/${id}`, { headers: this.getAuthHeaders() });
-  }
-
-  // Fonction pour créer un utilisateur
-  createUser(user: any): Observable<any> {
-    return this.http.post(`${BASE_URL}users/create/`, user, { headers: this.getAuthHeaders() });
-  }
 
 
-  // Fonction pour mettre à jour un utilisateur
-  updateUser(id: number, user: any): Observable<any> {
-    return this.http.put(`${BASE_URL}users/modifier/${id}`, user, { headers: this.getAuthHeaders() });
-  }
 
-  // Fonction pour supprimer un utilisateur
-  deleteUser(id: number): Observable<any> {
-    return this.http.delete(`${BASE_URL}users/supprimer/${id}`, { headers: this.getAuthHeaders() });
-  }
+
 
   // Fonction de déconnexion
   logout(): void {
     localStorage.removeItem('c_token');
     localStorage.removeItem('c_role');
     localStorage.removeItem('c_user');
+    localStorage.removeItem('c_permissions');
     this.router.navigate(['/login']);
   }
-
 
   // Fonction pour gérer les logs
   logAuthentication(message: string): void {
     console.log(message);
   }
 }
-
-
