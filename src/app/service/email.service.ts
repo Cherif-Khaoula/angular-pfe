@@ -36,7 +36,15 @@ export class EmailService {
       })
     );
   }
-  
+   getAllemails(): Observable<any> {
+      return this.http.get(`${BASE_URL}archive`, { headers: this.getAuthHeaders() });
+    }
+    getemailsenvoyer(): Observable<any> {
+      return this.http.get(`${BASE_URL}sent`, { headers: this.getAuthHeaders() });
+    }
+    getemailsrecevoir(): Observable<any> {
+      return this.http.get(`${BASE_URL}received`, { headers: this.getAuthHeaders() });
+    }
   
   
 }

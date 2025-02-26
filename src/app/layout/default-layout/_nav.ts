@@ -100,22 +100,73 @@ export function getNavItems(storageService: StorageService): INavData[] {
       url: '/profile',
       iconComponent: { name: 'cil-user' },
     });
-     // Gestion des e-mails
-  const emailMenu: INavData = {
+    
+
+  
+ // Gestion des rôles
+ if (permissions.includes('SENDEMAIL') ) {
+  const roleMenu: INavData = {
     name: 'E-mails',
     url: '/mails',
     iconComponent: { name: 'cil-envelope-open' },
-    children: [
-      {
-        name: 'Envoyer un e-mail',
-        url: '/mails/send',
-        icon: 'nav-icon-bullet'
-      }
-    ],
+    children: [],
   };
 
-  navItems.push(emailMenu);
+  if (permissions.includes('SENDEMAIL')) {
+    roleMenu.children!.push({
+      name: 'Envoyer un e-mail',
+        url: '/mails/send',
+        icon: 'nav-icon-bullet'
+    });
+  }
+  if (permissions.includes('SEEEMAIL')) {
+    roleMenu.children!.push({
+      name: 'Voirs les emails ',
+        url: '/mails/all',
+        icon: 'nav-icon-bullet'
+    });
+  }
+  if (permissions.includes('SEEEMAIL')) {
+    roleMenu.children!.push({
+      name: 'Voirs les emails Envoyes ',
+        url: '/mails/sent',
+        icon: 'nav-icon-bullet'
+    });
+  }
 
-  
+  if (permissions.includes('SEEEMAIL')) {
+    roleMenu.children!.push({
+      name: 'Boite de reception ',
+        url: '/mails/received',
+        icon: 'nav-icon-bullet'
+    });
+  }
+
+
+
+  if (roleMenu.children!.length > 0) {
+    navItems.push(roleMenu);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return navItems;
 }

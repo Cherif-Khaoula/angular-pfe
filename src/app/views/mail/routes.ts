@@ -10,6 +10,21 @@ export const routes: Routes = [
         path: 'send',
         loadComponent: () => import('./send/send.component').then(m => m.SendComponent),
        
+      },
+      {
+        path: 'all',
+        loadComponent: () => import('./all/all.component').then(m => m.AllComponent),
+       
+      },
+      {
+        path: 'sent',
+        loadComponent: () => import('./sent/sent.component').then(m => m.SentComponent),
+       
+      },
+      {
+        path: 'received',
+        loadComponent: () => import('./received/received.component').then(m => m.ReceivedComponent),
+       
       }
     ]
   }
